@@ -72,14 +72,9 @@ import "dojo/domReady!";
         view: mapView
       });
 
-      mapView.on("click", (evt: any) => {
-        console.log("view clicked - map point: ", evt.mapPoint);
-
-      });
-
       drawTools.watch("latestMapShape", (shape) => {
-        console.log("map shape changed: ", shape);
         drawResult(shape);
+        clearActiveTool();
       });
     });
   }
@@ -98,21 +93,17 @@ import "dojo/domReady!";
   }
 
   function handleToolClick(evt: MouseEvent) {
-    //console.log("tool clicked: ", evt);
     const elem = evt.target as Element;
     const toolType = elem.getAttribute("data-tool-type");
 
     const sameTool = toolType === sketchType;
-    //console.log("target attribute: ", toolType);
 
     clearActiveTool();
 
     if (toolType === "clear") {
-      //console.log("clear graphics please");
       mapView.graphics.removeAll();
     }
     else if (!sameTool) {
-      //console.log("activating a different tool");
       elem.classList.add("tool-active");
 
       const body = document.querySelector("body");
