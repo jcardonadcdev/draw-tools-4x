@@ -200,7 +200,7 @@ export class DrawTools extends declared(Accessor) {
    * @type {boolean}
    */
   @property()
-  showTooltip: boolean;
+  showTooltip: boolean = true;
 
 
   /**
