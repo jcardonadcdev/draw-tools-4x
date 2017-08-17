@@ -58,12 +58,13 @@ export class DrawTools extends declared(Accessor) {
   constructor(params: DrawToolParams) {
     super();
 
-    this._view = params.view;
+    this._set("view", params.view);
+    delete params.view;
   }
 
   initialize() {
     //get container of map view
-    const container = this._view.container as Element;
+    const container = this.view.container as Element;
 
     //canvas for drawing shapes as user clicks
     const canvas = document.createElement("canvas");
@@ -96,7 +97,7 @@ export class DrawTools extends declared(Accessor) {
 
     // Use mapView resize event to adjust the size of the canvas so it
     //  always covers the map
-    this._view.on("resize", this.mapViewResized);
+    this.view.on("resize", this.mapViewResized);
   }
 
 
@@ -105,8 +106,6 @@ export class DrawTools extends declared(Accessor) {
   //  Variables
   //
   //---------------------
-
-  _view: MapView;
 
   _canvas: HTMLCanvasElement;
   _context: CanvasRenderingContext2D;
@@ -170,6 +169,17 @@ export class DrawTools extends declared(Accessor) {
     point: true,
     multipoint: true
   };
+
+  /**
+   * The MapView using the draw tools
+   * @name view
+   * @type {MapView}
+   * @readonly
+   */
+  @property({
+    readOnly: true
+  })
+  readonly view: MapView;
 
 
   /**
@@ -358,7 +368,7 @@ export class DrawTools extends declared(Accessor) {
       const clickX = evt.x - this._canvasOffset.x;
       const clickY = evt.y - this._canvasOffset.y;
 
-      const mapPoint = this._view.toMap(new ScreenPoint({
+      const mapPoint = this.view.toMap(new ScreenPoint({
         x: clickX,
         y: clickY
       }));
@@ -447,7 +457,7 @@ export class DrawTools extends declared(Accessor) {
 
       const multipoint = new Multipoint({
         points: toolInfo.mapPoints,
-        spatialReference: this._view.spatialReference
+        spatialReference: this.view.spatialReference
       });
 
       this._set("latestMapShape", multipoint);
@@ -544,7 +554,7 @@ export class DrawTools extends declared(Accessor) {
 
       this._set("latestMapShape", new Polyline({
         paths: [toolInfo.mapPoints],
-        spatialReference: this._view.spatialReference
+        spatialReference: this.view.spatialReference
       }));
 
       toolInfo = null;
@@ -654,7 +664,7 @@ export class DrawTools extends declared(Accessor) {
       toolActive = false;
       this._set("latestMapShape", new Polyline({
         paths: [toolInfo.mapPoints],
-        spatialReference: this._view.spatialReference
+        spatialReference: this.view.spatialReference
       }));
 
       toolInfo = null;
@@ -768,7 +778,7 @@ export class DrawTools extends declared(Accessor) {
       toolActive = false;
       this._set("latestMapShape", new Polygon({
         rings: [toolInfo.mapPoints],
-        spatialReference: this._view.spatialReference
+        spatialReference: this.view.spatialReference
       }));
 
       toolInfo = null;
@@ -872,7 +882,7 @@ export class DrawTools extends declared(Accessor) {
         ymin: ll.y,
         xmax: ur.x,
         ymax: ur.y,
-        spatialReference: this._view.spatialReference
+        spatialReference: this.view.spatialReference
       }));
     };
 
@@ -963,7 +973,7 @@ export class DrawTools extends declared(Accessor) {
 
 
   screenCoordsToMapPoint(x: number, y: number): ScreenPoint {
-    const point = this._view.toMap(new ScreenPoint({
+    const point = this.view.toMap(new ScreenPoint({
       x: x,
       y: y
     }));
