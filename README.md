@@ -42,6 +42,7 @@ new DrawTools(properties)
 | Name      | Type      | Summary                     |
 | ----      | ------    | -------                     |
 | validShapes  **(static)** | Object | Geometries supported by the draw tools. Keys are the geometry type and values are a boolean |
+| view  **(read only)** | MapView | The [MapView](https://developers.arcgis.com/javascript/latest/api-reference/esri-views-MapView.html) associated with the DrawTools |
 | activeTool   **(read only** | string |  The currently active tool type. See below for a summary of geometry types |
 | showTooltip | boolean | Flag for displaying drawing tooltip |
 | latestMapShape | ArcGIS JavaScript API [Geometry](https://developers.arcgis.com/javascript/latest/api-reference/esri-geometry-Geometry.html) | The last geometry created by the draw tools. This property can be watched to capture when a geometry has been drawn | 
