@@ -1,0 +1,19 @@
+.drawtoool-tooltip {
+  background-color: #fff;
+  font-size: 0.75rem;
+  color: #000;
+  z-index: 20;
+  position: absolute;
+}
+
+.drawtoool-hidden {
+  display: none;
+}
+
+.drawtoool-active {
+  z-index: 20;
+}
+
+.drawtoool-not-active {
+  z-index: -1;
+}

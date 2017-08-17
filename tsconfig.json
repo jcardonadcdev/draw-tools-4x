@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "experimentalDecorators": true,
+	"inlineSourceMap": false,
+    "module": "amd",
+    "noEmitOnError": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "noImplicitUseStrict": true,
+    "noUnusedLocals": true,
+    "outDir": "dist",
+    "removeComments": false,
+    "suppressImplicitAnyIndexErrors": true,
+    "target": "es5"
+  },
+  "include": [
+    "*.ts",
+    "./**/*.ts",
+    "./typings/index.d.ts"
+  ],
+  "exclude": [
+    "node_modules/**/*.*"
+  ]
+}
