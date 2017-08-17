@@ -41,6 +41,10 @@ interface ToolInfo {
 
 interface DrawToolParams {
   view: MapView;
+  showTooltip?: boolean;
+  pointStyle?: PointStyle;
+  lineStyle?: LineStyle;
+  fillStyle?: FillStyle;
 }
 
 @subclass("src/DrawTools")
