@@ -76,11 +76,11 @@ new DrawTools(properties)
 
 ### Methods
 
-***`activate(geometryType)`***: Activates the tool for the supplied geometry type. When draw tools are active, the map navigation is disabled.
+***activate(geometryType)***: Activates the tool for the supplied geometry type. When draw tools are active, the map navigation is disabled.
 
     geometryType: A string. Valid values are *point*, *line*, *polyline*, *polygon*, and *circle*
     returns: A Promise that resolves with the `geometryType` string or rejects if the geometry type is invalid
     
-***`deactivate()`***: Deactivates the tools. Map navigation is re-enabled
+***deactivate()***: Deactivates the tools. Map navigation is re-enabled
 
     
