@@ -245,7 +245,7 @@ export class DrawTools extends declared(Accessor) {
     color: "rgba(5, 112, 176, 0.25)",
     outline: {
       color: "rgb(5, 112, 176)",
-      width: 1
+      width: 2
     }
   };
 
@@ -807,7 +807,7 @@ export class DrawTools extends declared(Accessor) {
 
     //set context draw styles
     this._context.fillStyle = this.fillStyle.color;
-    this._context.strokeStyle = this.fillStyle.color;
+    this._context.strokeStyle = this.fillStyle.outline.color;
     this._context.lineWidth = this.fillStyle.outline.width;
 
     const mouseDown = (evt: MouseEvent) => {
@@ -851,8 +851,8 @@ export class DrawTools extends declared(Accessor) {
 
       context.clearRect(0, 0, canvas.width, canvas.height);
 
-      context.strokeRect(x, y, w, h);
       context.fillRect(x, y, w, h);
+      context.strokeRect(x, y, w, h);
     };
 
     const mouseUp = (evt: MouseEvent) => {
