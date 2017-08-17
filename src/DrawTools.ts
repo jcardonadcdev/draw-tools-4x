@@ -43,7 +43,7 @@ interface DrawToolParams {
   view: MapView;
 }
 
-@subclass("4x/typescript/src/DrawTools")
+@subclass("src/DrawTools")
 export class DrawTools extends declared(Accessor) {
 
   //----------------------
