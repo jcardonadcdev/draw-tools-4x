@@ -9,13 +9,16 @@
   },
   "devDependencies": {
     "@types/arcgis-js-api": "^4.3.1",
-    "typescript": "^2.3.2",
-    "tslint": "^5.2.0"
+    "concurrently": "^3.5.0",
+    "tslint": "^5.2.0",
+    "typescript": "^2.3.2"
   },
   "scripts": {
-    "build": "tsc && tsc -p sample/tsconfig.json",
-    "watch:ts": "tsc --watch --inlineSourceMap",
-    "tslint": "tslint -p tsconfig.json -e **/node_modules/**"
+    "build": "tsc",
+    "build-sample": "tsc -p sample/tsconfig.json",
+    "build-all": "tsc && tsc -p sample/tsconfig.json",
+    "watch": "concurrently \"tsc --watch --inlineSourceMap\" \"tsc -p sample/tsconfig.json --watch --inlineSourceMap\"",
+    "tslint": "tslint -p tsconfig.json -e **/node_modules/** && tslint -p sample/tsconfig.json"
   },
   "keywords": [
     "arcgis",
