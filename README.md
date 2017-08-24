@@ -7,23 +7,20 @@ The tools consist of one *javascript* and one *css* file. Using the tools, user 
 
 ## Instructions
 
-### Without compiling
-
+### Using the tools in an application
 * Clone or download this repository
 * Copy the contents of the `dist` directory into a directory of your web application.
-* See the instructions below for referencing the ***DrawTools***
 
-### With compiling
-
-* Clone this repository
-* Install the dependencies using npm. `npm install`
-* Compile the typescript with the npm script.  `npm run build:ts`
-
-## Using the tools in an application
-
-* Copy the `dist/src/DrawTools.js` and `src/css/drawtools.css` into directories in your web application.
+* Copy the `dist/drawtools4x/DrawTools.js` and `src/css/drawtools.css` into directories in your web application.
 * Reference the `drawtools.css` in your application
-* Reference the ***DrawTools*** using `import` in TypeScript or `require` in JavaScript.
+
+#### Using TypeScript
+* Reference the ***DrawTools*** declaration file using `import`.
+* Create a new instance of the ***DrawTools*** passing in a `MapView` in the constructor.
+* Use the `activate` / `deactivate` methods to enable and disable drawing on the view
+
+#### Using JavaScript
+* Reference the `drawtools4x/DrawTools.js` file in a require statement.
 * Create a new instance of the ***DrawTools*** passing in a `MapView` in the constructor.
 * Use the `activate` / `deactivate` methods to enable and disable drawing on the view
 
