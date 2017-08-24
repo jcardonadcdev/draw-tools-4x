@@ -15,10 +15,10 @@
   },
   "scripts": {
     "build": "tsc",
-    "build-sample": "tsc -p sample/tsconfig.json",
-    "build-all": "tsc && tsc -p sample/tsconfig.json",
-    "watch": "concurrently \"tsc --watch --inlineSourceMap\" \"tsc -p sample/tsconfig.json --watch --inlineSourceMap\"",
-    "tslint": "tslint -p tsconfig.json -e **/node_modules/** && tslint -p sample/tsconfig.json"
+    "build-sample": "tsc -p sample/typescript/tsconfig.json",
+    "build-all": "tsc && tsc -p sample/typescript/tsconfig.json",
+    "watch": "concurrently \"tsc --watch --inlineSourceMap\" \"tsc -p sample/typescript/tsconfig.json --watch --inlineSourceMap\"",
+    "tslint": "tslint -p tsconfig.json -e **/node_modules/** && tslint -p sample/typescript/tsconfig.json"
   },
   "keywords": [
     "arcgis",

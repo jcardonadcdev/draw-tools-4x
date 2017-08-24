@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "baseUrl": "../dist",
+    "baseUrl": "../../dist",
     "experimentalDecorators": true,
 	"inlineSourceMap": false,
     "module": "amd",
