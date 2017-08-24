@@ -1,4 +1,4 @@
-import { drawtools4x } from "src/DrawTools";
+import { drawtools4x } from "drawtools4x/DrawTools";
 
 import Map = require("esri/Map");
 import MapView = require("esri/views/MapView");

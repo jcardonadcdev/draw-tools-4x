@@ -13,7 +13,7 @@
     "tslint": "^5.2.0"
   },
   "scripts": {
-    "build:ts": "tsc",
+    "build": "tsc && tsc -p sample/tsconfig.json",
     "watch:ts": "tsc --watch --inlineSourceMap",
     "tslint": "tslint -p tsconfig.json -e **/node_modules/**"
   },

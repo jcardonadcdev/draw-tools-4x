@@ -48,7 +48,7 @@ export namespace drawtools4x {
     fillStyle?: FillStyle;
   }
 
-  @subclass("src/DrawTools")
+  @subclass("drawtools4x/DrawTools")
   export class DrawTools extends declared(Accessor) {
 
     //----------------------

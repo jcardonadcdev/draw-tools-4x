@@ -725,7 +725,7 @@ define(["require", "exports", "esri/core/accessorSupport/decorators", "esri/core
                 decorators_1.property()
             ], DrawTools.prototype, "fillStyle", void 0);
             DrawTools = DrawTools_1 = __decorate([
-                decorators_1.subclass("src/DrawTools")
+                decorators_1.subclass("drawtools4x/DrawTools")
             ], DrawTools);
             return DrawTools;
             var DrawTools_1;
