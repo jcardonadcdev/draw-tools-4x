@@ -16,23 +16,6 @@ import Polyline = require("esri/geometry/Polyline");
 import Polygon = require("esri/geometry/Polygon");
 import Extent = require("esri/geometry/Extent");
 
-//Interfaces for draw styles
-interface LineStyle {
-  width: number;
-  color: string;
-}
-
-interface FillStyle {
-  color?: string;
-  outline: LineStyle;
-}
-
-interface PointStyle {
-  color: string;
-  size: number;
-  outline?: LineStyle;
-}
-
 interface ToolInfo {
   type: string;
   screenPoints: number[][];
@@ -40,6 +23,23 @@ interface ToolInfo {
 }
 
 export namespace drawtools4x {
+  //Interfaces for draw styles
+  export interface LineStyle {
+    width: number;
+    color: string;
+  }
+
+  export interface FillStyle {
+    color?: string;
+    outline: LineStyle;
+  }
+
+  export interface PointStyle {
+    color: string;
+    size: number;
+    outline?: LineStyle;
+  }
+
   export interface DrawToolProperties {
     view: MapView;
     showTooltip?: boolean;
