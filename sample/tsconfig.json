@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "baseUrl": "../src",
+    "baseUrl": "../dist",
     "experimentalDecorators": true,
 	"inlineSourceMap": false,
     "module": "amd",
@@ -15,8 +15,5 @@
   },
   "include": [
     "*.ts"
-  ],
-  "exclude": [
-    "../src/**/*.ts"
   ]
 }

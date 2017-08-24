@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "declaration": true,
+    "declarationDir": "dist/drawtools4x",
     "experimentalDecorators": true,
 	"inlineSourceMap": false,
     "module": "amd",
