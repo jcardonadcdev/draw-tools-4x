@@ -1,9 +1,9 @@
-import {
-  DrawTools
-} from "src/DrawTools";
+import { drawtools4x } from "src/DrawTools";
 
 import Map = require("esri/Map");
 import MapView = require("esri/views/MapView");
+
+import BaseMap = require("esri/Basemap");
 
 import SimpleMarkerSymbol = require("esri/symbols/SimpleMarkerSymbol");
 import SimpleLineSymbol = require("esri/symbols/SimpleLineSymbol");
@@ -55,11 +55,12 @@ import "dojo/domReady!";
   //set up src
   initializeTools();
 
-  let drawTools: DrawTools;
+  let drawTools: drawtools4x.DrawTools;
 
   function initializeMap() {
+
     const map = new Map({
-      basemap: "gray"
+      basemap: BaseMap.fromId("gray")
     });
 
     mapView = new MapView({
@@ -68,9 +69,18 @@ import "dojo/domReady!";
     });
 
     mapView.then(() => {
-      drawTools = new DrawTools({
-        view: mapView
-      });
+      const props: drawtools4x.DrawToolProperties = {
+        view: mapView,
+        fillStyle: {
+          color: "rgba(255,0,0,0.1)",
+          outline: {
+            color: "rgb(255,0,0)",
+            width: 2
+          }
+        }
+      };
+
+      drawTools = new drawtools4x.DrawTools(props);
 
       drawTools.watch("latestMapShape", (shape) => {
         drawResult(shape);
