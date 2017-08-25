@@ -16,22 +16,12 @@ import Polyline = require("esri/geometry/Polyline");
 import Polygon = require("esri/geometry/Polygon");
 import Extent = require("esri/geometry/Extent");
 
-//Interfaces for draw styles
-interface LineStyle {
-  width: number;
-  color: string;
-}
-
-interface FillStyle {
-  color?: string;
-  outline: LineStyle;
-}
-
-interface PointStyle {
-  color: string;
-  size: number;
-  outline?: LineStyle;
-}
+import {
+  DrawToolProperties,
+  FillStyle,
+  LineStyle,
+  PointStyle
+} from "interfaces/draw-tool-interfaces";
 
 interface ToolInfo {
   type: string;
@@ -39,23 +29,15 @@ interface ToolInfo {
   mapPoints: number[][];
 }
 
-interface DrawToolParams {
-  view: MapView;
-  showTooltip?: boolean;
-  pointStyle?: PointStyle;
-  lineStyle?: LineStyle;
-  fillStyle?: FillStyle;
-}
-
-@subclass("src/DrawTools")
-export class DrawTools extends declared(Accessor) {
+@subclass("drawtools4x.DrawTools")
+class DrawTools extends declared(Accessor) {
 
   //----------------------
   //
   //  Lifecycle
   //
   //---------------------
-  constructor(params: DrawToolParams) {
+  constructor(params: DrawToolProperties) {
     super();
 
     this._set("view", params.view);
@@ -107,14 +89,14 @@ export class DrawTools extends declared(Accessor) {
   //
   //---------------------
 
-  _canvas: HTMLCanvasElement;
-  _context: CanvasRenderingContext2D;
+  private _canvas: HTMLCanvasElement;
+  private _context: CanvasRenderingContext2D;
 
-  _tooltipContainer: HTMLElement;
+  private _tooltipContainer: HTMLElement;
 
   //Text to display in tooltip for the different geometries.
   //TODO this should be in an nls file
-  _tooltips = {
+  private _tooltips = {
     point: "Click to add point",
     multipoint: "Click to add points.<br> Double click to finish drawing",
     line: "Mouse down and drag to make line.<br>Mouse up to finish drawing",
@@ -124,7 +106,7 @@ export class DrawTools extends declared(Accessor) {
   };
 
   //Event handlers for mouse move so tooltip follows cursor
-  _tooltipMouseMove = (evt: MouseEvent) => {
+  private _tooltipMouseMove = (evt: MouseEvent) => {
     const clickX = evt.x - this._canvasOffset.x;
     const clickY = evt.y - this._canvasOffset.y;
 
@@ -132,15 +114,15 @@ export class DrawTools extends declared(Accessor) {
     this._tooltipContainer.style.top = clickY + 10 + "px";
   };
 
-  _tooltipMouseEnter = () => {
+  private _tooltipMouseEnter = () => {
     this._tooltipContainer.classList.remove("drawtoool-hidden");
   };
 
-  _tooltipMouseLeave = () => {
+  private _tooltipMouseLeave = () => {
     this._tooltipContainer.classList.add("drawtoool-hidden");
   };
 
-  _canvasOffset = {
+  private _canvasOffset = {
     x: 0,
     y: 0
   };
@@ -265,7 +247,7 @@ export class DrawTools extends declared(Accessor) {
   //
   //--------------------------------
 
-  mapViewResized = (evt: any) => {
+  private mapViewResized = (evt: any) => {
     this._canvas.height = evt.height;
     this._canvas.width = evt.width;
   };
@@ -362,7 +344,7 @@ export class DrawTools extends declared(Accessor) {
   // Activate Point Tool
   //--------------------------
 
-  activatePoint = () => {
+  private activatePoint = () => {
     const mouseClick = (evt: MouseEvent) => {
       this.setTooltipActive(false);
       const clickX = evt.x - this._canvasOffset.x;
@@ -389,7 +371,7 @@ export class DrawTools extends declared(Accessor) {
   // Activate Multipoint Tool
   //--------------------------
 
-  activateMultipoint = () => {
+  private activateMultipoint = () => {
     let toolActive: boolean;
 
     let toolInfo: ToolInfo;
@@ -487,7 +469,7 @@ export class DrawTools extends declared(Accessor) {
   // Activate Line Tool
   //--------------------------
 
-  activateLine = () => {
+  private activateLine = () => {
     let toolActive: boolean;
 
     let toolInfo: ToolInfo;
@@ -584,7 +566,7 @@ export class DrawTools extends declared(Accessor) {
   //--------------------------
   // Activate Polyline Tool
   //--------------------------
-  activatePolyline = () => {
+  private activatePolyline = () => {
     let toolInfo: ToolInfo;
     let toolActive: boolean;
 
@@ -696,7 +678,7 @@ export class DrawTools extends declared(Accessor) {
   //--------------------------
   // Activate Polygon Tool
   //--------------------------
-  activatePolygon = () => {
+  private activatePolygon = () => {
     let toolInfo: ToolInfo;
     let toolActive: boolean;
 
@@ -811,7 +793,7 @@ export class DrawTools extends declared(Accessor) {
   // Activate Rectangle Tool
   //--------------------------
 
-  activateRectangle = () => {
+  private activateRectangle = () => {
     let rectangle: any;
     let toolActive: boolean;
 
@@ -911,7 +893,7 @@ export class DrawTools extends declared(Accessor) {
   // Make an event handler that takes into
   // account single and double click on same element
   //--------------------------------------------------
-  makeSingleDoubleClickHandler(singleHandler: any, doubleHandler: any) {
+  private makeSingleDoubleClickHandler(singleHandler: any, doubleHandler: any) {
     const handler = (evt: MouseEvent) => {
       const elem = evt.target as Element;
       const attribName = "data-dbl-click";
@@ -941,7 +923,7 @@ export class DrawTools extends declared(Accessor) {
   //--------------------------
   // Activate/Deactivate Tooltip
   //--------------------------
-  setTooltipActive(active: boolean, shape?: string) {
+  private setTooltipActive(active: boolean, shape?: string) {
     if (!this.showTooltip) {
       return;
     }
@@ -967,12 +949,12 @@ export class DrawTools extends declared(Accessor) {
   //--------------------------
 
   //Used for drawing arcs
-  degreesToRadians(degrees: number): number {
+  private degreesToRadians(degrees: number): number {
     return (Math.PI / 180) * degrees;
   }
 
 
-  screenCoordsToMapPoint(x: number, y: number): ScreenPoint {
+  private screenCoordsToMapPoint(x: number, y: number): ScreenPoint {
     const point = this.view.toMap(new ScreenPoint({
       x: x,
       y: y
@@ -985,3 +967,4 @@ export class DrawTools extends declared(Accessor) {
   }
 }
 
+export = DrawTools;

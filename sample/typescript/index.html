@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Draw Tools 4.x Sample</title>
+  <link rel="stylesheet" href="https://js.arcgis.com/4.4/esri/css/main.css">
+  <link rel="stylesheet" href="../css/app.css">
+  <link rel="stylesheet" href="../../src/css/drawtools.css">
+  <script>
+    var dojoConfig = {
+      async: true,
+      isDebug: true,
+      baseUrl: "../../dist",
+      tlmSiblingOfDojo: true,
+      paths: {
+        dojo: "https://js.arcgis.com/4.4/dojo",
+        esri: "https://js.arcgis.com/4.4/esri"
+      }
+    };
+  </script>
+  <script src="https://js.arcgis.com/4.4/"></script>
+</head>
+<body>
+  <h4>Draw Tools</h4>
+  <div id="toolbar" class="toolbar">
+    <button class="toolbar-tool" data-tool-type="point" disabled>Point</button>
+    <button class="toolbar-tool" data-tool-type="multipoint" disabled>Multi Point</button>
+    <button class="toolbar-tool" data-tool-type="line" disabled>Line</button>
+    <button class="toolbar-tool" data-tool-type="polyline" disabled>Polyline</button>
+    <button class="toolbar-tool" data-tool-type="polygon" disabled>Polygon</button>
+    <button class="toolbar-tool" data-tool-type="rectangle" disabled>Rectangle</button>
+    <button class="toolbar-tool" data-tool-type="clear" disabled>Clear</button>
+
+  </div>
+  <div id="map-div" class="map">
+
+  </div>
+
+  <script>require(["drawtools-main.js"]);</script>
+</body>
+
+</html>

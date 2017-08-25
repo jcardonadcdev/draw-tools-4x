@@ -1,9 +1,8 @@
 node_modules/
 npm-debug.*
 
-dist/
-
-**/*.js
+sample/typescript/*.js
+src/**/*.js
 
 # JetBrains
 .idea/

@@ -1,23 +1,31 @@
-import {
+require([
+  "esri/Map",
+  "esri/views/MapView",
+
+  "esri/Basemap",
+
+  "esri/symbols/SimpleMarkerSymbol",
+  "esri/symbols/SimpleLineSymbol",
+  "esri/symbols/SimpleFillSymbol",
+
+  "esri/Graphic",
+
+  "drawtools4x/DrawTools",
+
+  "dojo/domReady!"
+], function(
+  Map, MapView,
+  Basemap,
+  SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol,
+  Graphic,
   DrawTools
-} from "src/DrawTools";
+) {
 
-import Map = require("esri/Map");
-import MapView = require("esri/views/MapView");
+  var sketchType;
+  var mapView;
+  var drawTools;
 
-import SimpleMarkerSymbol = require("esri/symbols/SimpleMarkerSymbol");
-import SimpleLineSymbol = require("esri/symbols/SimpleLineSymbol");
-import SimpleFillSymbol = require("esri/symbols/SimpleFillSymbol");
-
-import Graphic = require("esri/Graphic");
-
-import "dojo/domReady!";
-
-(function initialize() {
-  let sketchType: string;
-  let mapView: MapView;
-
-  const markerSymbol = SimpleMarkerSymbol.fromJSON({
+  var markerSymbol = SimpleMarkerSymbol.fromJSON({
     "type": "esriSMS",
     "style": "esriSMSCircle",
     "color": [76, 115, 0, 150],
@@ -32,14 +40,14 @@ import "dojo/domReady!";
       }
   });
 
-  const lineSymbol = SimpleLineSymbol.fromJSON({
+  var lineSymbol = SimpleLineSymbol.fromJSON({
     "type" : "esriSLS",
     "style" : "esriSLSSolid",
     "color" : [76, 115, 0, 175],
     "width" : 2
   });
 
-  const fillSymbol = SimpleFillSymbol.fromJSON({
+  var fillSymbol = SimpleFillSymbol.fromJSON({
     "type" : "esriSFS",
     "style" : "esriSFSSolid",
     "color" : [76, 115, 0, 80],
@@ -55,11 +63,9 @@ import "dojo/domReady!";
   //set up src
   initializeTools();
 
-  let drawTools: DrawTools;
-
   function initializeMap() {
-    const map = new Map({
-      basemap: "gray"
+    var map = new Map({
+      basemap: Basemap.fromId("gray")
     });
 
     mapView = new MapView({
@@ -67,36 +73,46 @@ import "dojo/domReady!";
       container: "map-div"
     });
 
-    mapView.then(() => {
-      drawTools = new DrawTools({
-        view: mapView
-      });
+    mapView
+      .then(function(resp) {
+        var props = {
+          view: mapView,
+          fillStyle: {
+            color: "rgba(255,0,0,0.1)",
+            outline: {
+              color: "rgb(255,0,0)",
+              width: 2
+            }
+          }
+        };
 
-      drawTools.watch("latestMapShape", (shape) => {
-        drawResult(shape);
+        drawTools = new DrawTools(props);
+
+        drawTools.watch("latestMapShape", function(shape) {
+          drawResult(shape);
         clearActiveTool();
       });
-    });
+      })
+      .otherwise(function(err) {
+        console.log("error making view: ", err);
+      })
   }
 
   function initializeTools() {
-    const buttons = document.querySelectorAll("[data-tool-type]");
+    var buttons = document.querySelectorAll("[data-tool-type]");
 
-    let i: number;
-    const n = buttons.length;
-
-    for (i = 0; i < n; i++) {
-      const b = buttons.item(i);
+    for (var i = 0, n = buttons.length; i < n; i++) {
+      var b = buttons.item(i);
       b.addEventListener("click", handleToolClick);
       b.removeAttribute("disabled");
     }
   }
 
-  function handleToolClick(evt: MouseEvent) {
-    const elem = evt.target as Element;
-    const toolType = elem.getAttribute("data-tool-type");
+  function handleToolClick(evt) {
+    var elem = evt.target;
+    var toolType = elem.getAttribute("data-tool-type");
 
-    const sameTool = toolType === sketchType;
+    var sameTool = toolType === sketchType;
 
     clearActiveTool();
 
@@ -112,10 +128,10 @@ import "dojo/domReady!";
       sketchType = toolType;
 
       drawTools.activate(sketchType)
-        .then((shape) => {
+        .then(function(shape) {
           //console.log("tool activated: ", shape);
         })
-        .otherwise((err) => {
+        .otherwise(function(err) {
           console.log("error activating tool: ", err);
           clearActiveTool();
         });
@@ -128,10 +144,7 @@ import "dojo/domReady!";
 
     const buttons = document.querySelectorAll("[data-tool-type]");
 
-    let i: number;
-    const n = buttons.length;
-
-    for (i = 0; i < n; i++) {
+    for (var i = 0, n = buttons.length; i < n; i++) {
       const b = buttons.item(i);
       b.classList.remove("tool-active");
     }
@@ -140,8 +153,8 @@ import "dojo/domReady!";
     drawTools.deactivate();
   }
 
-  function drawResult(geometry: any) {
-    let s: any;
+  function drawResult(geometry) {
+    var s;
 
     if (geometry.type === "point" || geometry.type === "multipoint") {
       s = markerSymbol;
@@ -160,4 +173,4 @@ import "dojo/domReady!";
       }));
     }
   }
-})();
+});

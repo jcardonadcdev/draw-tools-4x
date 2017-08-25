@@ -7,27 +7,31 @@ The tools consist of one *javascript* and one *css* file. Using the tools, user 
 
 ## Instructions
 
-### Without compiling
-
+### Using the tools in an application
 * Clone or download this repository
 * Copy the contents of the `dist` directory into a directory of your web application.
-* See the instructions below for referencing the ***DrawTools***
 
-### With compiling
-
-* Clone this repository
-* Install the dependencies using npm. `npm install`
-* Compile the typescript with the npm script.  `npm run build:ts`
-
-## Using the tools in an application
-
-* Copy the `dist/src/DrawTools.js` and `src/css/drawtools.css` into directories in your web application.
+* Copy the `dist/drawtools4x/DrawTools.js` and `src/css/drawtools.css` into directories in your web application.
 * Reference the `drawtools.css` in your application
-* Reference the ***DrawTools*** using `import` in TypeScript or `require` in JavaScript.
+
+#### Using TypeScript
+* Reference the `drawtools-js-4.d.ts` declaration file using `/// <reference path="path/to/file" />`. 
 * Create a new instance of the ***DrawTools*** passing in a `MapView` in the constructor.
 * Use the `activate` / `deactivate` methods to enable and disable drawing on the view
 
-See the *samples* directory for a sample application written in TypeScript and in JavaScript
+#### Using JavaScript
+* Reference the `drawtools4x/DrawTools.js` file in a require statement.
+* Create a new instance of the ***DrawTools*** passing in a `MapView` in the constructor.
+* Use the `activate` / `deactivate` methods to enable and disable drawing on the view
+
+See the *samples* directory for a sample application written in TypeScript and in JavaScript. Note the `dojoConfig` variable in a script tag. It is needed to access modules locally and from the esri javascript api hosted on a CDN.
+
+### Compiling the TypeScript
+* You'll need to download the **dev-dependencies** using *npm*. From a command line in the root of the project run `npm install`. This downloads the necessary node modules.
+* The following scripts can be run to compile different pieces:
+  * `npm run build-sample` - Compiles `sample/typescript/drawtools-main.ts`. After running this, you can access the TypeScript sample app.
+  * `npm run build-all` - Compiles the file listed above as well as `src/drawtools4x/DrawTools.ts`. The DrawTools.js file gets put in `dist/drawtools4x/DrawTools.js`. In addition, a declaration file gets created at `dist/drawtools-js-4.d.ts`. It has typings for the DrawTools and the interfaces.
+  * `npm run watch` - Compiles the same files above and watches for changes to `DrawTools.ts` and `drawtools-main.ts` and recompiles when there are changes.
 
 ## Documentation
 
@@ -78,7 +82,7 @@ new DrawTools(properties)
 
 ***activate(geometryType)*** - Activates the tool for the supplied geometry type. When draw tools are active, the map navigation is disabled.
 
-    geometryType: A string. Valid values are *point*, *line*, *polyline*, *polygon*, and *circle*
+    geometryType: A string. Valid values are *point*, *line*, *polyline*, *polygon*, and *rectangle*
     returns: A Promise that resolves with the `geometryType` string or rejects if the geometry type is invalid
     
 ***deactivate()*** - Deactivates the tools. Map navigation is re-enabled
