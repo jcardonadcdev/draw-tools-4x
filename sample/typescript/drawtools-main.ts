@@ -1,4 +1,4 @@
-import { drawtools4x } from "drawtools4x/DrawTools";
+/// <reference path="../../dist/drawtools-js-4.d.ts" />
 
 import Map = require("esri/Map");
 import MapView = require("esri/views/MapView");
@@ -10,6 +10,11 @@ import SimpleLineSymbol = require("esri/symbols/SimpleLineSymbol");
 import SimpleFillSymbol = require("esri/symbols/SimpleFillSymbol");
 
 import Graphic = require("esri/Graphic");
+
+import DrawTools = require("drawtools4x/DrawTools");
+import {
+  DrawToolProperties
+} from "drawtools4x/interfaces/draw-tool-interfaces";
 
 import "dojo/domReady!";
 
@@ -55,7 +60,7 @@ import "dojo/domReady!";
   //set up src
   initializeTools();
 
-  let drawTools: drawtools4x.DrawTools;
+  let drawTools: DrawTools;
 
   function initializeMap() {
 
@@ -69,7 +74,7 @@ import "dojo/domReady!";
     });
 
     mapView.then(() => {
-      const props: drawtools4x.DrawToolProperties = {
+      const props: DrawToolProperties = {
         view: mapView,
         fillStyle: {
           color: "rgba(255,0,0,0.1)",
@@ -80,7 +85,7 @@ import "dojo/domReady!";
         }
       };
 
-      drawTools = new drawtools4x.DrawTools(props);
+      drawTools = new DrawTools(props);
 
       drawTools.watch("latestMapShape", (shape) => {
         drawResult(shape);

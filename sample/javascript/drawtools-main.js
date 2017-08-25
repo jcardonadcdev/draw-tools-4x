@@ -20,6 +20,7 @@ require([
   Graphic,
   DrawTools
 ) {
+
   var sketchType;
   var mapView;
   var drawTools;
@@ -85,7 +86,7 @@ require([
           }
         };
 
-        drawTools = new DrawTools.drawtools4x.DrawTools(props);
+        drawTools = new DrawTools(props);
 
         drawTools.watch("latestMapShape", function(shape) {
           drawResult(shape);

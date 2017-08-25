@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
-    "declaration": true,
-    "declarationDir": "dist/drawtools4x",
+    "baseUrl": "./src",
+    //"declaration": true,
+    //"declarationDir": "dist/drawtools4x",
     "experimentalDecorators": true,
 	"inlineSourceMap": false,
     "module": "amd",
@@ -9,18 +10,22 @@
     "noImplicitAny": true,
     "noImplicitThis": true,
     "noImplicitUseStrict": true,
+    "noResolve": false,
     "noUnusedLocals": true,
     "outDir": "dist/drawtools4x",
+    //"outFile": "dist/drawtools4x/DrawTools.js",
     "removeComments": false,
     "suppressImplicitAnyIndexErrors": true,
     "target": "es5"
   },
   "include": [
     "./src/**/*.ts",
+    "./interfaces/*.ts",
     "./typings/index.d.ts"
   ],
   "exclude": [
     "samples/",
+    "dist/",
     "node_modules/**/*.*"
   ]
 }

@@ -10,6 +10,8 @@
   "devDependencies": {
     "@types/arcgis-js-api": "^4.3.1",
     "concurrently": "^3.5.0",
+    "dts-generator": "^2.1.0",
+    "grunt": "^1.0.1",
     "tslint": "^5.2.0",
     "typescript": "^2.3.2"
   },
