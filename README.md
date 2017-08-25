@@ -15,7 +15,7 @@ The tools consist of one *javascript* and one *css* file. Using the tools, user 
 * Reference the `drawtools.css` in your application
 
 #### Using TypeScript
-* Reference the ***DrawTools*** declaration file using `import`.
+* Reference the `drawtools-js-4.d.ts` declaration file using `/// <reference path="path/to/file" />`. 
 * Create a new instance of the ***DrawTools*** passing in a `MapView` in the constructor.
 * Use the `activate` / `deactivate` methods to enable and disable drawing on the view
 
@@ -75,7 +75,7 @@ new DrawTools(properties)
 
 ***activate(geometryType)*** - Activates the tool for the supplied geometry type. When draw tools are active, the map navigation is disabled.
 
-    geometryType: A string. Valid values are *point*, *line*, *polyline*, *polygon*, and *circle*
+    geometryType: A string. Valid values are *point*, *line*, *polyline*, *polygon*, and *rectangle*
     returns: A Promise that resolves with the `geometryType` string or rejects if the geometry type is invalid
     
 ***deactivate()*** - Deactivates the tools. Map navigation is re-enabled
