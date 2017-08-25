@@ -16,9 +16,8 @@
     "typescript": "^2.3.2"
   },
   "scripts": {
-    "build": "tsc",
     "build-sample": "tsc -p sample/typescript/tsconfig.json",
-    "build-all": "tsc && tsc -p sample/typescript/tsconfig.json",
+    "build-all": "tsc && grunt build && tsc -p sample/typescript/tsconfig.json",
     "watch": "concurrently \"tsc --watch --inlineSourceMap\" \"tsc -p sample/typescript/tsconfig.json --watch --inlineSourceMap\"",
     "tslint": "tslint -p tsconfig.json -e **/node_modules/** && tslint -p sample/typescript/tsconfig.json"
   },

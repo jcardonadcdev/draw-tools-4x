@@ -24,7 +24,14 @@ The tools consist of one *javascript* and one *css* file. Using the tools, user 
 * Create a new instance of the ***DrawTools*** passing in a `MapView` in the constructor.
 * Use the `activate` / `deactivate` methods to enable and disable drawing on the view
 
-See the *samples* directory for a sample application written in TypeScript and in JavaScript
+See the *samples* directory for a sample application written in TypeScript and in JavaScript. Note the `dojoConfig` variable in a script tag. It is needed to access modules locally and from the esri javascript api hosted on a CDN.
+
+### Compiling the TypeScript
+* You'll need to download the **dev-dependencies** using *npm*. From a command line in the root of the project run `npm install`. This downloads the necessary node modules.
+* The following scripts can be run to compile different pieces:
+  * `npm run build-sample` - Compiles `sample/typescript/drawtools-main.ts`. After running this, you can access the TypeScript sample app.
+  * `npm run build-all` - Compiles the file listed above as well as `src/drawtools4x/DrawTools.ts`. The DrawTools.js file gets put in `dist/drawtools4x/DrawTools.js`. In addition, a declaration file gets created at `dist/drawtools-js-4.d.ts`. It has typings for the DrawTools and the interfaces.
+  * `npm run watch` - Compiles the same files above and watches for changes to `DrawTools.ts` and `drawtools-main.ts` and recompiles when there are changes.
 
 ## Documentation
 
