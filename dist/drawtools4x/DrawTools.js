@@ -14,7 +14,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-define(["require", "exports", "esri/core/accessorSupport/decorators", "esri/core/Accessor", "esri/core/promiseUtils", "esri/geometry/ScreenPoint", "esri/geometry/Multipoint", "esri/geometry/Polyline", "esri/geometry/Polygon", "esri/geometry/Extent"], function (require, exports, decorators_1, Accessor, promiseUtils, ScreenPoint, Multipoint, Polyline, Polygon, Extent) {
+define(["require", "exports", "esri/core/accessorSupport/decorators", "esri/core/Accessor", "esri/core/promiseUtils", "esri/geometry/ScreenPoint", "esri/geometry/Multipoint", "esri/geometry/Polyline", "esri/geometry/Polygon", "esri/geometry/Extent", "esri/geometry/Circle", "esri/geometry/geometryEngine"], function (require, exports, decorators_1, Accessor, promiseUtils, ScreenPoint, Multipoint, Polyline, Polygon, Extent, Circle, geometryEngine) {
     var DrawTools = (function (_super) {
         __extends(DrawTools, _super);
         //----------------------
@@ -32,7 +32,8 @@ define(["require", "exports", "esri/core/accessorSupport/decorators", "esri/core
                 line: "Mouse down and drag to make line.<br>Mouse up to finish drawing",
                 polyline: "Click to add vertices.<br>Double click to finish drawing",
                 polygon: "Click to add vertices.<br>Double click to finish drawing",
-                rectangle: "Mouse down and drag<br>to make rectangle.<br>Mouse up to finish drawing"
+                rectangle: "Mouse down and drag<br>to make rectangle.<br>Mouse up to finish drawing",
+                circle: "Mouse down and drag<br>to make circle.<br>Mouse up to finish drawing"
             };
             //Event handlers for mouse move so tooltip follows cursor
             _this._tooltipMouseMove = function (evt) {
@@ -517,6 +518,93 @@ define(["require", "exports", "esri/core/accessorSupport/decorators", "esri/core
                 _this._canvas.addEventListener("mousemove", mouseMove);
                 _this._canvas.addEventListener("mouseup", mouseUp);
             };
+            //--------------------------
+            // Activate Circle Tool
+            //--------------------------
+            _this.activateCircle = function () {
+                var shape;
+                var toolActive;
+                //set context draw styles
+                _this._context.fillStyle = _this.fillStyle.color;
+                _this._context.strokeStyle = _this.fillStyle.outline.color;
+                _this._context.lineWidth = _this.fillStyle.outline.width;
+                var mouseDown = function (evt) {
+                    var clickX = evt.x - _this._canvasOffset.x;
+                    var clickY = evt.y - _this._canvasOffset.y;
+                    shape = {
+                        xstart: clickX,
+                        ystart: clickY,
+                        dist: 0
+                    };
+                    var context = _this._context;
+                    context.clearRect(0, 0, _this._canvas.width, _this._canvas.height);
+                    toolActive = true;
+                };
+                var mouseMove = function (evt) {
+                    if (!toolActive) {
+                        return;
+                    }
+                    //calculate cumulative x and y distance
+                    var clickX = evt.x - _this._canvasOffset.x;
+                    var clickY = evt.y - _this._canvasOffset.y;
+                    var distX = shape.xstart - clickX;
+                    var distY = shape.ystart - clickY;
+                    var dist = Math.round(Math.sqrt(Math.pow(distX, 2) + Math.pow(distY, 2)));
+                    shape.dist = dist;
+                    var context = _this._context;
+                    var canvas = _this._canvas;
+                    context.clearRect(0, 0, canvas.width, canvas.height);
+                    context.beginPath();
+                    context.arc(shape.xstart, shape.ystart, dist, 0, _this.degreesToRadians(360));
+                    context.fill();
+                    context.stroke();
+                };
+                var mouseUp = function (evt) {
+                    toolActive = false;
+                    _this._context.clearRect(0, 0, _this._canvas.width, _this._canvas.height);
+                    var clickX = evt.x - _this._canvasOffset.x;
+                    var clickY = evt.y - _this._canvasOffset.y;
+                    var endPoint = _this.view.toMap(new ScreenPoint({
+                        x: clickX,
+                        y: clickY
+                    }));
+                    var startPoint = _this.view.toMap(new ScreenPoint({
+                        x: shape.xstart,
+                        y: shape.ystart
+                    }));
+                    //NOTE: The buffer method is used regardless of map projection
+                    //let buffer: Polygon | Polygon[];
+                    //const sr = startPoint.spatialReference;
+                    var dist = geometryEngine.distance(startPoint, endPoint, "meters");
+                    var circle = new Circle({
+                        center: startPoint,
+                        radius: dist,
+                        radiusUnit: "meters"
+                    });
+                    /*if (sr.isGeographic || sr.isWebMercator) {
+                      buffer = geometryEngine.geodesicBuffer(startPoint, dist, "meters");
+                    }
+                    else {
+                      buffer = geometryEngine.buffer(startPoint, dist, "meters");
+                    }*/
+                    _this._set("latestMapShape", circle);
+                };
+                _this._canvasHandlers.push({
+                    type: "mousedown",
+                    handler: mouseDown
+                });
+                _this._canvasHandlers.push({
+                    type: "mousemove",
+                    handler: mouseMove
+                });
+                _this._canvasHandlers.push({
+                    type: "mouseup",
+                    handler: mouseUp
+                });
+                _this._canvas.addEventListener("mousedown", mouseDown);
+                _this._canvas.addEventListener("mousemove", mouseMove);
+                _this._canvas.addEventListener("mouseup", mouseUp);
+            };
             _this._set("view", params.view);
             delete params.view;
             return _this;
@@ -594,6 +682,9 @@ define(["require", "exports", "esri/core/accessorSupport/decorators", "esri/core
             else if (shape === "polygon") {
                 this.activatePolygon();
             }
+            else if (shape === "circle") {
+                this.activateCircle();
+            }
             return promiseUtils.resolve(shape);
         };
         /**
@@ -617,6 +708,7 @@ define(["require", "exports", "esri/core/accessorSupport/decorators", "esri/core
         // account single and double click on same element
         //--------------------------------------------------
         DrawTools.prototype.makeSingleDoubleClickHandler = function (singleHandler, doubleHandler) {
+            //console.log("making single/double click handler");
             var handler = function (evt) {
                 var elem = evt.target;
                 var attribName = "data-dbl-click";
@@ -624,13 +716,15 @@ define(["require", "exports", "esri/core/accessorSupport/decorators", "esri/core
                     elem.setAttribute(attribName, "1");
                     setTimeout(function () {
                         if (elem.getAttribute(attribName) === "1") {
+                            //console.log("single click");
                             singleHandler(evt);
                         }
                         else {
+                            //console.log("double click");
                             doubleHandler(evt);
                         }
                         elem.removeAttribute(attribName);
-                    }, 150);
+                    }, 50);
                 }
                 else if (elem.getAttribute(attribName) === "1") {
                     elem.setAttribute(attribName, "2");
@@ -692,7 +786,8 @@ define(["require", "exports", "esri/core/accessorSupport/decorators", "esri/core
             polygon: true,
             line: true,
             point: true,
-            multipoint: true
+            multipoint: true,
+            circle: true
         };
         __decorate([
             decorators_1.property({
