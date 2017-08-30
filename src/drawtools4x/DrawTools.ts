@@ -15,6 +15,9 @@ import Multipoint = require("esri/geometry/Multipoint");
 import Polyline = require("esri/geometry/Polyline");
 import Polygon = require("esri/geometry/Polygon");
 import Extent = require("esri/geometry/Extent");
+import Circle = require("esri/geometry/Circle");
+
+import geometryEngine = require("esri/geometry/geometryEngine");
 
 import {
   DrawToolProperties,
@@ -102,7 +105,8 @@ class DrawTools extends declared(Accessor) {
     line: "Mouse down and drag to make line.<br>Mouse up to finish drawing",
     polyline: "Click to add vertices.<br>Double click to finish drawing",
     polygon: "Click to add vertices.<br>Double click to finish drawing",
-    rectangle: "Mouse down and drag<br>to make rectangle.<br>Mouse up to finish drawing"
+    rectangle: "Mouse down and drag<br>to make rectangle.<br>Mouse up to finish drawing",
+    circle: "Mouse down and drag<br>to make circle.<br>Mouse up to finish drawing"
   };
 
   //Event handlers for mouse move so tooltip follows cursor
@@ -149,7 +153,8 @@ class DrawTools extends declared(Accessor) {
     polygon: true,
     line: true,
     point: true,
-    multipoint: true
+    multipoint: true,
+    circle: true
   };
 
   /**
@@ -300,6 +305,9 @@ class DrawTools extends declared(Accessor) {
     }
     else if (shape === "polygon") {
       this.activatePolygon();
+    }
+    else if (shape === "circle") {
+      this.activateCircle();
     }
 
     return promiseUtils.resolve(shape);
@@ -889,11 +897,129 @@ class DrawTools extends declared(Accessor) {
   };
 
 
+  //--------------------------
+  // Activate Circle Tool
+  //--------------------------
+
+  private activateCircle = () => {
+    let shape: any;
+    let toolActive: boolean;
+
+    //set context draw styles
+    this._context.fillStyle = this.fillStyle.color;
+    this._context.strokeStyle = this.fillStyle.outline.color;
+    this._context.lineWidth = this.fillStyle.outline.width;
+
+    const mouseDown = (evt: MouseEvent) => {
+
+      const clickX = evt.x - this._canvasOffset.x;
+      const clickY = evt.y - this._canvasOffset.y;
+
+      shape = {
+        xstart: clickX,
+        ystart: clickY,
+        dist: 0
+      };
+
+      const context = this._context;
+      context.clearRect(0, 0, this._canvas.width, this._canvas.height);
+
+      toolActive = true;
+    };
+
+    const mouseMove = (evt: MouseEvent) => {
+      if (!toolActive) {
+        return;
+      }
+
+      //calculate cumulative x and y distance
+      const clickX = evt.x - this._canvasOffset.x;
+      const clickY = evt.y - this._canvasOffset.y;
+
+      const distX = shape.xstart - clickX;
+      const distY = shape.ystart - clickY;
+
+      const dist = Math.round(Math.sqrt(Math.pow(distX, 2) + Math.pow(distY, 2)));
+      shape.dist = dist;
+
+      const context = this._context;
+      const canvas = this._canvas;
+
+      context.clearRect(0, 0, canvas.width, canvas.height);
+
+      context.beginPath();
+      context.arc(shape.xstart, shape.ystart, dist, 0, this.degreesToRadians(360));
+      context.fill();
+      context.stroke();
+    };
+
+    const mouseUp = (evt: MouseEvent) => {
+      toolActive = false;
+
+      this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
+
+      const clickX = evt.x - this._canvasOffset.x;
+      const clickY = evt.y - this._canvasOffset.y;
+
+      const endPoint = this.view.toMap(new ScreenPoint({
+        x: clickX,
+        y: clickY
+      }));
+
+      const startPoint = this.view.toMap(new ScreenPoint({
+        x: shape.xstart,
+        y: shape.ystart
+      }));
+
+      //NOTE: The buffer method is used regardless of map projection
+      //let buffer: Polygon | Polygon[];
+      //const sr = startPoint.spatialReference;
+
+      const dist = geometryEngine.distance(startPoint, endPoint, "meters");
+
+      const circle = new Circle({
+        center: startPoint,
+        radius: dist,
+        radiusUnit: "meters"
+      });
+
+      /*if (sr.isGeographic || sr.isWebMercator) {
+        buffer = geometryEngine.geodesicBuffer(startPoint, dist, "meters");
+      }
+      else {
+        buffer = geometryEngine.buffer(startPoint, dist, "meters");
+      }*/
+
+      this._set("latestMapShape", circle);
+    };
+
+    this._canvasHandlers.push({
+      type: "mousedown",
+      handler: mouseDown
+    });
+
+    this._canvasHandlers.push({
+      type: "mousemove",
+      handler: mouseMove
+    });
+
+    this._canvasHandlers.push({
+      type: "mouseup",
+      handler: mouseUp
+    });
+
+    this._canvas.addEventListener("mousedown", mouseDown);
+    this._canvas.addEventListener("mousemove", mouseMove);
+    this._canvas.addEventListener("mouseup", mouseUp);
+  };
+
+
   //--------------------------------------------------
   // Make an event handler that takes into
   // account single and double click on same element
   //--------------------------------------------------
   private makeSingleDoubleClickHandler(singleHandler: any, doubleHandler: any) {
+    //console.log("making single/double click handler");
     const handler = (evt: MouseEvent) => {
       const elem = evt.target as Element;
       const attribName = "data-dbl-click";
@@ -903,13 +1029,15 @@ class DrawTools extends declared(Accessor) {
         setTimeout(() => {
 
           if (elem.getAttribute(attribName) === "1") {
+            //console.log("single click");
             singleHandler(evt);
           }
           else {
+            //console.log("double click");
             doubleHandler(evt);
           }
           elem.removeAttribute(attribName);
-        }, 150);
+        }, 50);
       }
       else if (elem.getAttribute(attribName) === "1") {
         elem.setAttribute(attribName, "2");

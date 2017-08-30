@@ -59,6 +59,7 @@ declare module 'drawtools4x/DrawTools' {
 	        line: boolean;
 	        point: boolean;
 	        multipoint: boolean;
+	        circle: boolean;
 	    };
 	    /**
 	     * The MapView using the draw tools
@@ -128,6 +129,7 @@ declare module 'drawtools4x/DrawTools' {
 	    private activatePolyline;
 	    private activatePolygon;
 	    private activateRectangle;
+	    private activateCircle;
 	    private makeSingleDoubleClickHandler(singleHandler, doubleHandler);
 	    private setTooltipActive(active, shape?);
 	    private degreesToRadians(degrees);
