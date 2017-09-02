@@ -48,11 +48,12 @@ new DrawTools(properties)
 | view  **(read only)** | MapView | The [MapView](https://developers.arcgis.com/javascript/latest/api-reference/esri-views-MapView.html) associated with the DrawTools |
 | activeTool   **(read only** | string |  The currently active tool type. See below for a summary of geometry types |
 | showTooltip | boolean | Flag for displaying drawing tooltip |
-| latestMapShape | ArcGIS JavaScript API [Geometry](https://developers.arcgis.com/javascript/latest/api-reference/esri-geometry-Geometry.html) | The last geometry created by the draw tools. This property can be watched to capture when a geometry has been drawn | 
-| pointStyle | Object | The style to use for drawing points. See below for properties. |
-| lineStyle | Object | The style to use for drawing lines. See below for properties. |
-| fillStyle | Object | The style to use for drawing fills of rectangles and polygons. See below for properties. |
+| latestMapShape | DrawResult  | The last geometry created by the draw tools. This property can be watched to capture when a geometry has been drawn. See below for properties | 
+| pointStyle | PointStyle | The style to use for drawing points. See below for properties. |
+| lineStyle | LineStyle | The style to use for drawing lines. See below for properties. |
+| fillStyle | FillStyle | The style to use for drawing fills of rectangles and polygons. See below for properties. |
 
+#### Styles
 
 **Point Style Properties**
   
@@ -76,6 +77,64 @@ new DrawTools(properties)
 | color | A valid color such as `"blue"`, or `"rgb(255,0,0)"` or `"#dcdcdc"` |
 | outline | An object with the same properties ast the point outline |
 
+
+#### Result and Geometries
+
+**DrawResult**
+
+| Name | Type | Summary |
+| --- | --- | --- |
+| screenGeometry | ScreenGeometry | The geometry in screen coordinates. See below for properties |
+| mapGeometry | ArcGIS JavaScript API [Geometry](https://developers.arcgis.com/javascript/latest/api-reference/esri-geometry-Geometry.html) | The geometry im map coordinates |
+
+
+
+**ScreenGeometry**
+
+| Name | Type | Summary |
+| --- | --- | --- |
+| type | string | "point", "multipoint", "polyline", "polygon", "extent", or "circle" |
+| shape | Object | A screen geometry. See below for the types of geometries |
+
+**ScreenCoordinate**
+
+| Name | Type | Summary |
+| --- | --- | --- |
+| x | number | x coordinate on screen|
+| y | number | y coordinate on screen |
+
+**ScreenMultipoint**
+
+| Name | Type | Summary |
+| --- | --- | --- |
+| points | number[][] | array of xy screen coordinates|
+
+**ScreenLine**
+
+| Name | Type | Summary |
+| --- | --- | --- |
+| points | number[][] | array of xy screen coordinates|
+
+**ScreenPolygon**
+
+| Name | Type | Summary |
+| --- | --- | --- |
+| points | number[][] | array of xy screen coordinates|
+
+**ScreenExtent**
+
+| Name | Type | Summary |
+| --- | --- | --- |
+| topCorner | ScreenCoordinate | xy screen coordinate of top left|
+| height | number | height of rectangle |
+| width | number | width of rectangle |
+
+**ScreenCircle**
+
+| Name | Type | Summary |
+| --- | --- | --- |
+| center | ScreenCoordinate | xy coordinates of center of circle|
+| radius | number | radius of circle |
 
 ### Methods
 
