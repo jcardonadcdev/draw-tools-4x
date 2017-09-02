@@ -1,6 +1,6 @@
 {
   "name": "draw-tools-4x",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Simple draw tools for the ArcGIS JavaScript API 4.x version. These are for temporary use until the official tools are released by Esri",
   "main": "index.js",
   "repository": {

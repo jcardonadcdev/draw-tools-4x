@@ -11,6 +11,7 @@ import MapView = require("esri/views/MapView");
 
 import ScreenPoint = require("esri/geometry/ScreenPoint");
 
+import Point = require("esri/geometry/Point");
 import Multipoint = require("esri/geometry/Multipoint");
 import Polyline = require("esri/geometry/Polyline");
 import Polygon = require("esri/geometry/Polygon");
@@ -19,12 +20,14 @@ import Circle = require("esri/geometry/Circle");
 
 import geometryEngine = require("esri/geometry/geometryEngine");
 
-import {
+import * as DrawToolInterfaces from "interfaces/draw-tool-interfaces";
+
+/*import {
   DrawToolProperties,
   FillStyle,
   LineStyle,
   PointStyle
-} from "interfaces/draw-tool-interfaces";
+} from "interfaces/draw-tool-interfaces";*/
 
 interface ToolInfo {
   type: string;
@@ -40,7 +43,7 @@ class DrawTools extends declared(Accessor) {
   //  Lifecycle
   //
   //---------------------
-  constructor(params: DrawToolProperties) {
+  constructor(params: DrawToolInterfaces.DrawToolProperties) {
     super();
 
     this._set("view", params.view);
@@ -200,7 +203,7 @@ class DrawTools extends declared(Accessor) {
   @property({
     readOnly: true
   })
-  latestMapShape: any;
+  latestMapShape: DrawToolInterfaces.DrawResult;
 
 
   /**
@@ -209,7 +212,7 @@ class DrawTools extends declared(Accessor) {
    * @type {PointStyle}
    */
   @property()
-  pointStyle: PointStyle = {
+  pointStyle: DrawToolInterfaces.PointStyle = {
     color: "rgba(5, 112, 176, 0.25)",
     size: 15,
     outline: {
@@ -225,7 +228,7 @@ class DrawTools extends declared(Accessor) {
    * @type {LineStyle}
    */
   @property()
-  lineStyle: LineStyle = {
+  lineStyle: DrawToolInterfaces.LineStyle = {
     color: "rgba(5, 112, 176, 0.25)",
     width: 2
   };
@@ -238,7 +241,7 @@ class DrawTools extends declared(Accessor) {
    * @type {FillStyle}
    */
   @property()
-  fillStyle: FillStyle = {
+  fillStyle: DrawToolInterfaces.FillStyle = {
     color: "rgba(5, 112, 176, 0.25)",
     outline: {
       color: "rgb(5, 112, 176)",
@@ -358,12 +361,23 @@ class DrawTools extends declared(Accessor) {
       const clickX = evt.x - this._canvasOffset.x;
       const clickY = evt.y - this._canvasOffset.y;
 
-      const mapPoint = this.view.toMap(new ScreenPoint({
+      const mapPoint: Point = this.view.toMap(new ScreenPoint({
         x: clickX,
         y: clickY
       }));
 
-      this._set("latestMapShape", mapPoint);
+      const result: DrawToolInterfaces.DrawResult = {
+        screenGeometry: {
+          shape: {
+            x: clickX,
+            y: clickY
+          },
+          type: "point"
+        },
+        mapGeometry: mapPoint
+      };
+
+      this._set("latestMapShape", result);
     };
 
     this._canvasHandlers.push({
@@ -450,7 +464,17 @@ class DrawTools extends declared(Accessor) {
         spatialReference: this.view.spatialReference
       });
 
-      this._set("latestMapShape", multipoint);
+      const result: DrawToolInterfaces.DrawResult = {
+        screenGeometry: {
+          shape: {
+            points: toolInfo.screenPoints
+          },
+          type: "multipoint"
+        },
+        mapGeometry: multipoint
+      };
+
+      this._set("latestMapShape", result);
 
       toolInfo = null;
     };
@@ -542,10 +566,20 @@ class DrawTools extends declared(Accessor) {
 
       toolActive = false;
 
-      this._set("latestMapShape", new Polyline({
-        paths: [toolInfo.mapPoints],
-        spatialReference: this.view.spatialReference
-      }));
+      const result: DrawToolInterfaces.DrawResult = {
+        screenGeometry: {
+          shape: {
+            points: toolInfo.screenPoints
+          },
+          type: "polyline"
+        },
+        mapGeometry: new Polyline({
+          paths: [toolInfo.mapPoints],
+          spatialReference: this.view.spatialReference
+        })
+      };
+
+      this._set("latestMapShape", result);
 
       toolInfo = null;
     };
@@ -652,10 +686,20 @@ class DrawTools extends declared(Accessor) {
       this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
 
       toolActive = false;
-      this._set("latestMapShape", new Polyline({
-        paths: [toolInfo.mapPoints],
-        spatialReference: this.view.spatialReference
-      }));
+
+      const result: DrawToolInterfaces.DrawResult = {
+        screenGeometry: {
+          shape: {
+            points: toolInfo.screenPoints
+          },
+          type: "polyline"
+        },
+        mapGeometry: new Polyline({
+          paths: [toolInfo.mapPoints],
+          spatialReference: this.view.spatialReference
+        })
+      };
+      this._set("latestMapShape", result);
 
       toolInfo = null;
     };
@@ -766,10 +810,21 @@ class DrawTools extends declared(Accessor) {
       this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
 
       toolActive = false;
-      this._set("latestMapShape", new Polygon({
-        rings: [toolInfo.mapPoints],
-        spatialReference: this.view.spatialReference
-      }));
+
+      const result: DrawToolInterfaces.DrawResult = {
+        screenGeometry: {
+          shape: {
+            points: toolInfo.screenPoints
+          },
+          type: "polygon"
+        },
+        mapGeometry: new Polygon({
+          rings: [toolInfo.mapPoints],
+          spatialReference: this.view.spatialReference
+        })
+      };
+
+      this._set("latestMapShape", result);
 
       toolInfo = null;
     };
@@ -867,13 +922,28 @@ class DrawTools extends declared(Accessor) {
       const ll = this.screenCoordsToMapPoint(rect.x, rect.y + rect.h);
       const ur = this.screenCoordsToMapPoint(rect.x + rect.w, rect.y);
 
-      this._set("latestMapShape", new Extent({
-        xmin: ll.x,
-        ymin: ll.y,
-        xmax: ur.x,
-        ymax: ur.y,
-        spatialReference: this.view.spatialReference
-      }));
+      const result: DrawToolInterfaces.DrawResult = {
+        screenGeometry: {
+          shape: {
+            topCorner: {
+              x: rect.x,
+              y: rect.y
+            },
+            height: rect.h,
+            width: rect.w
+          },
+          type: "extent"
+        },
+        mapGeometry: new Extent({
+          xmin: ll.x,
+          ymin: ll.y,
+          xmax: ur.x,
+          ymax: ur.y,
+          spatialReference: this.view.spatialReference
+        })
+      };
+
+      this._set("latestMapShape", result);
     };
 
     this._canvasHandlers.push({
@@ -980,8 +1050,23 @@ class DrawTools extends declared(Accessor) {
       const circle = new Circle({
         center: startPoint,
         radius: dist,
-        radiusUnit: "meters"
+        radiusUnit: "meters",
+        spatialReference: startPoint.spatialReference
       });
+
+      const result: DrawToolInterfaces.DrawResult = {
+        screenGeometry: {
+          shape: {
+            center: {
+              x: shape.xstart,
+              y: shape.ystart
+            },
+            radius: shape.dist
+          },
+          type: "circle"
+        },
+        mapGeometry: circle
+      };
 
       /*if (sr.isGeographic || sr.isWebMercator) {
         buffer = geometryEngine.geodesicBuffer(startPoint, dist, "meters");
@@ -990,7 +1075,7 @@ class DrawTools extends declared(Accessor) {
         buffer = geometryEngine.buffer(startPoint, dist, "meters");
       }*/
 
-      this._set("latestMapShape", circle);
+      this._set("latestMapShape", result);
     };
 
     this._canvasHandlers.push({

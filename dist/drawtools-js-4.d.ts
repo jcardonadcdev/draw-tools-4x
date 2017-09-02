@@ -1,5 +1,12 @@
 declare module 'drawtools4x/interfaces/draw-tool-interfaces' {
-	import MapView = require("esri/views/MapView"); namespace DrawToolInterfaces {
+	import MapView = require("esri/views/MapView");
+
+	import Point = require("esri/geometry/Point");
+	import Multipoint = require("esri/geometry/Multipoint");
+	import Polyline = require("esri/geometry/Polyline");
+	import Polygon = require("esri/geometry/Polygon");
+	import Extent = require("esri/geometry/Extent");
+	import Circle = require("esri/geometry/Circle"); namespace DrawToolInterfaces {
 	  //Interfaces for draw styles
 	  interface LineStyle {
 	    width: number;
@@ -24,6 +31,62 @@ declare module 'drawtools4x/interfaces/draw-tool-interfaces' {
 	    lineStyle?: LineStyle;
 	    fillStyle?: FillStyle;
 	  }
+
+	  type GeometryType = "point" |
+	    "multipoint" |
+	    "polyline" |
+	    "polygon" |
+	    "extent" |
+	    "circle";
+
+	  interface ScreenCoordinate {
+	    x: number;
+	    y: number;
+	  }
+
+	  export interface ScreenMultipoint {
+	    points: number[][];
+	  }
+
+	  export interface ScreenExtent {
+	    topCorner: ScreenCoordinate;
+	    width: number;
+	    height: number;
+	  }
+
+	  export interface ScreenLine {
+	    points: number[][];
+	  }
+
+	  export interface ScreenPolygon {
+	    points: number[][];
+	  }
+
+	  export interface ScreenCircle {
+	    center: ScreenCoordinate;
+	    radius: number;
+	  }
+
+	  export interface ScreenGeometry {
+	    type: GeometryType;
+	    shape: ScreenCoordinate | ScreenMultipoint | ScreenLine |
+	      ScreenPolygon | ScreenExtent |
+	      ScreenCircle;
+	  }
+
+	  type MapGeometryType = Point |
+	    Multipoint |
+	    Polyline |
+	    Polygon |
+	    Extent |
+	    Circle;
+
+	  export interface DrawResult {
+	    screenGeometry: ScreenGeometry;
+	    mapGeometry: Point | Multipoint |
+	      Polyline | Polygon |
+	      Extent | Circle;
+	  }
 	}
 
 	export = DrawToolInterfaces;
@@ -34,8 +97,8 @@ declare module 'drawtools4x/DrawTools' {
 	/// <reference types="arcgis-js-api" />
 	import Accessor = require("esri/core/Accessor");
 	import MapView = require("esri/views/MapView");
-	import { DrawToolProperties, FillStyle, LineStyle, PointStyle } from "interfaces/draw-tool-interfaces"; const DrawTools_base: typeof Accessor; class DrawTools extends DrawTools_base {
-	    constructor(params: DrawToolProperties);
+	import * as DrawToolInterfaces from "interfaces/draw-tool-interfaces"; const DrawTools_base: typeof Accessor; class DrawTools extends DrawTools_base {
+	    constructor(params: DrawToolInterfaces.DrawToolProperties);
 	    initialize(): void;
 	    private _canvas;
 	    private _context;
@@ -89,26 +152,26 @@ declare module 'drawtools4x/DrawTools' {
 	     * @name latestMapShape
 	     * @type {*}
 	     */
-	    latestMapShape: any;
+	    latestMapShape: DrawToolInterfaces.DrawResult;
 	    /**
 	     * The style to use for drawing points. This style is
 	     * used to draw the multipoint locations as the mouse is clicked.
 	     * @type {PointStyle}
 	     */
-	    pointStyle: PointStyle;
+	    pointStyle: DrawToolInterfaces.PointStyle;
 	    /**
 	     * The style to use for drawing lines. This style is
 	     * used to draw the line and polygon paths as the mouse is clicked.
 	     * @type {LineStyle}
 	     */
-	    lineStyle: LineStyle;
+	    lineStyle: DrawToolInterfaces.LineStyle;
 	    /**
 	     * The style to use for drawing fills. This style is
 	     * used to draw the polygon and rectangle locations as the
 	     * mouse is clicked or dragged.
 	     * @type {FillStyle}
 	     */
-	    fillStyle: FillStyle;
+	    fillStyle: DrawToolInterfaces.FillStyle;
 	    private mapViewResized;
 	    /**
 	     * Activates the tool for the supplied geometry type.

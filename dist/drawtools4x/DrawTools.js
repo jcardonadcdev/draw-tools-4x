@@ -130,7 +130,17 @@ define(["require", "exports", "esri/core/accessorSupport/decorators", "esri/core
                         x: clickX,
                         y: clickY
                     }));
-                    _this._set("latestMapShape", mapPoint);
+                    var result = {
+                        screenGeometry: {
+                            shape: {
+                                x: clickX,
+                                y: clickY
+                            },
+                            type: "point"
+                        },
+                        mapGeometry: mapPoint
+                    };
+                    _this._set("latestMapShape", result);
                 };
                 _this._canvasHandlers.push({
                     type: "click",
@@ -192,7 +202,16 @@ define(["require", "exports", "esri/core/accessorSupport/decorators", "esri/core
                         points: toolInfo.mapPoints,
                         spatialReference: _this.view.spatialReference
                     });
-                    _this._set("latestMapShape", multipoint);
+                    var result = {
+                        screenGeometry: {
+                            shape: {
+                                points: toolInfo.screenPoints
+                            },
+                            type: "multipoint"
+                        },
+                        mapGeometry: multipoint
+                    };
+                    _this._set("latestMapShape", result);
                     toolInfo = null;
                 };
                 var dblclick = _this.makeSingleDoubleClickHandler(click, doubleClick);
@@ -255,10 +274,19 @@ define(["require", "exports", "esri/core/accessorSupport/decorators", "esri/core
                     var context = _this._context;
                     context.clearRect(0, 0, _this._canvas.width, _this._canvas.height);
                     toolActive = false;
-                    _this._set("latestMapShape", new Polyline({
-                        paths: [toolInfo.mapPoints],
-                        spatialReference: _this.view.spatialReference
-                    }));
+                    var result = {
+                        screenGeometry: {
+                            shape: {
+                                points: toolInfo.screenPoints
+                            },
+                            type: "polyline"
+                        },
+                        mapGeometry: new Polyline({
+                            paths: [toolInfo.mapPoints],
+                            spatialReference: _this.view.spatialReference
+                        })
+                    };
+                    _this._set("latestMapShape", result);
                     toolInfo = null;
                 };
                 _this._canvasHandlers.push({
@@ -337,10 +365,19 @@ define(["require", "exports", "esri/core/accessorSupport/decorators", "esri/core
                     click(evt);
                     _this._context.clearRect(0, 0, _this._canvas.width, _this._canvas.height);
                     toolActive = false;
-                    _this._set("latestMapShape", new Polyline({
-                        paths: [toolInfo.mapPoints],
-                        spatialReference: _this.view.spatialReference
-                    }));
+                    var result = {
+                        screenGeometry: {
+                            shape: {
+                                points: toolInfo.screenPoints
+                            },
+                            type: "polyline"
+                        },
+                        mapGeometry: new Polyline({
+                            paths: [toolInfo.mapPoints],
+                            spatialReference: _this.view.spatialReference
+                        })
+                    };
+                    _this._set("latestMapShape", result);
                     toolInfo = null;
                 };
                 var dblclick = _this.makeSingleDoubleClickHandler(click, doubleClick);
@@ -422,10 +459,19 @@ define(["require", "exports", "esri/core/accessorSupport/decorators", "esri/core
                     click(evt);
                     _this._context.clearRect(0, 0, _this._canvas.width, _this._canvas.height);
                     toolActive = false;
-                    _this._set("latestMapShape", new Polygon({
-                        rings: [toolInfo.mapPoints],
-                        spatialReference: _this.view.spatialReference
-                    }));
+                    var result = {
+                        screenGeometry: {
+                            shape: {
+                                points: toolInfo.screenPoints
+                            },
+                            type: "polygon"
+                        },
+                        mapGeometry: new Polygon({
+                            rings: [toolInfo.mapPoints],
+                            spatialReference: _this.view.spatialReference
+                        })
+                    };
+                    _this._set("latestMapShape", result);
                     toolInfo = null;
                 };
                 var dblclick = _this.makeSingleDoubleClickHandler(click, doubleClick);
@@ -494,13 +540,27 @@ define(["require", "exports", "esri/core/accessorSupport/decorators", "esri/core
                     var rect = rectangle.rect;
                     var ll = _this.screenCoordsToMapPoint(rect.x, rect.y + rect.h);
                     var ur = _this.screenCoordsToMapPoint(rect.x + rect.w, rect.y);
-                    _this._set("latestMapShape", new Extent({
-                        xmin: ll.x,
-                        ymin: ll.y,
-                        xmax: ur.x,
-                        ymax: ur.y,
-                        spatialReference: _this.view.spatialReference
-                    }));
+                    var result = {
+                        screenGeometry: {
+                            shape: {
+                                topCorner: {
+                                    x: rect.x,
+                                    y: rect.y
+                                },
+                                height: rect.h,
+                                width: rect.w
+                            },
+                            type: "extent"
+                        },
+                        mapGeometry: new Extent({
+                            xmin: ll.x,
+                            ymin: ll.y,
+                            xmax: ur.x,
+                            ymax: ur.y,
+                            spatialReference: _this.view.spatialReference
+                        })
+                    };
+                    _this._set("latestMapShape", result);
                 };
                 _this._canvasHandlers.push({
                     type: "mousedown",
@@ -579,15 +639,29 @@ define(["require", "exports", "esri/core/accessorSupport/decorators", "esri/core
                     var circle = new Circle({
                         center: startPoint,
                         radius: dist,
-                        radiusUnit: "meters"
+                        radiusUnit: "meters",
+                        spatialReference: startPoint.spatialReference
                     });
+                    var result = {
+                        screenGeometry: {
+                            shape: {
+                                center: {
+                                    x: shape.xstart,
+                                    y: shape.ystart
+                                },
+                                radius: shape.dist
+                            },
+                            type: "circle"
+                        },
+                        mapGeometry: circle
+                    };
                     /*if (sr.isGeographic || sr.isWebMercator) {
                       buffer = geometryEngine.geodesicBuffer(startPoint, dist, "meters");
                     }
                     else {
                       buffer = geometryEngine.buffer(startPoint, dist, "meters");
                     }*/
-                    _this._set("latestMapShape", circle);
+                    _this._set("latestMapShape", result);
                 };
                 _this._canvasHandlers.push({
                     type: "mousedown",

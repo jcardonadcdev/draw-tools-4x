@@ -153,8 +153,9 @@ require([
     drawTools.deactivate();
   }
 
-  function drawResult(geometry) {
+  function drawResult(drawResult) {
     var s;
+    var geometry = drawResult.mapGeometry;
 
     if (geometry.type === "point" || geometry.type === "multipoint") {
       s = markerSymbol;

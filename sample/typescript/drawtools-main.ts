@@ -12,8 +12,10 @@ import SimpleFillSymbol = require("esri/symbols/SimpleFillSymbol");
 import Graphic = require("esri/Graphic");
 
 import DrawTools = require("drawtools4x/DrawTools");
+
 import {
-  DrawToolProperties
+  DrawToolProperties,
+  DrawResult
 } from "drawtools4x/interfaces/draw-tool-interfaces";
 
 import "dojo/domReady!";
@@ -155,8 +157,11 @@ import "dojo/domReady!";
     drawTools.deactivate();
   }
 
-  function drawResult(geometry: any) {
+  function drawResult(drawResult: DrawResult) {
     let s: any;
+    const geometry = drawResult.mapGeometry;
+
+    console.log("drawResult: ", drawResult);
 
     if (geometry.type === "point" || geometry.type === "multipoint") {
       s = markerSymbol;
